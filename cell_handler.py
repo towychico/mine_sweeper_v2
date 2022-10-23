@@ -13,7 +13,8 @@ class Cell(pygame.sprite.Sprite):
     def __init__(self, row, col, number, x_pos, y_pos,game_session):
         pygame.sprite.Sprite.__init__(self)
         self.game_session = game_session
-        self.image = pygame.image.load('./sprites/cell.png')
+        self.image_raw = pygame.image.load('./sprites/cell.png')
+        self.image = pygame.transform.scale(self.image_raw,(70*game_session.sprites_scale, 70*game_session.sprites_scale))
         self.rect = self.image.get_rect(topleft=(x_pos * game_session.sprites_scale,
                                                  y_pos * game_session.sprites_scale))
         self.x_pos = x_pos * game_session.sprites_scale

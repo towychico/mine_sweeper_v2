@@ -31,8 +31,9 @@ class Map:
         for row in nested_list:
             lower_i = 0
             for _ in row:
-                x_pos = (upper_i * 70 + 8)*self.game_session.sprites_scale
-                y_pos = (lower_i * 70 + 250)*self.game_session.sprites_scale
+
+                x_pos = (upper_i * 70 + 8)
+                y_pos = (lower_i * 70 + 250)
                 temp_cell = Cell(upper_i, lower_i, nested_list[upper_i][lower_i], x_pos, y_pos, self.game_session)
                 new_board[upper_i][lower_i] = temp_cell
                 lower_i += 1

@@ -7,7 +7,7 @@ import pygame
 pygame.init()
 
 import datetime
-temporal_scale = 1.3
+temporal_scale = 0.5
 BACKGROUND_COLOR = (255, 255, 255)
 (width, height) = (855 * temporal_scale, 1100 * temporal_scale)
 window = pygame.display.set_mode((width, height))
@@ -24,7 +24,7 @@ clock_img = pygame.image.load("./sprites/Clock.png")
 clock_img = pygame.transform.scale(clock_img, (46*game_session.sprites_scale, 46*game_session.sprites_scale))
 
 flag_img = pygame.image.load("./sprites/Flag.png")
-flag_img = pygame.transform.scale(flag_img, (46*game_session.sprites_scale, 46*game_session.sprites_scale)) 
+flag_img = pygame.transform.scale(flag_img, (46*game_session.sprites_scale, 46*game_session.sprites_scale))
 
 font = pygame.font.Font("./fonts/Indigo.otf", math.ceil(40*game_session.sprites_scale))
 
