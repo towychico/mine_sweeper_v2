@@ -59,8 +59,10 @@ class Cell(pygame.sprite.Sprite):
         :return: The image of the cell
         :doc-author: Trelent
         """
-
+        self.exposed()
+        self.game_session.number_of_clicks += 1
         self.image = pygame.image.load(CELL_SPRITE_LIST[self.number])
+
 
 
     def check_for_mine(self):

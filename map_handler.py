@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from cell_handler import Cell
+import pygame
 
 
 class Map:
@@ -24,7 +25,18 @@ class Map:
 
 
     def build_board(self, nested_list):
+        """
+        The build_board function takes a nested list of strings and creates a new board
+        with the appropriate cells. The function iterates through the nested list, creating
+        a cell for each element in the nested list. The x_pos and y_pos are calculated by multiplying
+        the row number by 70 (width of one cell) plus 8 (for padding). Each cell is then added to
+        the board.
 
+        :param self: Access the variables and methods of the class in which it is used
+        :param nested_list: Create the board
+        :return: A list of lists that contains cell objects
+        :doc-author: Trelent
+        """
         temp = np.zeros((self.width, self.height))
         new_board = temp.tolist()
         upper_i = 0
@@ -84,6 +96,41 @@ class Map:
                     adjacent_index_list.append([new_x, new_y])
 
         return adjacent_index_list
+
+    def get_cell_position(self, xy_tuple):
+        """
+        The get_cell_position function takes a tuple of coordinates and returns the position of that cell in the matrix.
+        The function iterates through each row in the matrix, then iterates through each cell within that row.
+        If it finds a cell with a rect attribute containing xy_tuple, it returns its position as an (x, y) tuple.
+
+        :param self: Access the class attributes
+        :param xy_tuple: Get the coordinates of a mouse click
+        :return: The position of the cell in the matrix that contains a given point
+        :doc-author: Trelent
+        """
+        upper_i = 0
+        for row in self.board:
+            lower_i = 0
+            for _ in row:
+                cell = self.board[upper_i][lower_i]
+                if pygame.Rect.collidepoint(cell.rect, xy_tuple):
+                    return upper_i, lower_i
+                lower_i += 1
+            upper_i += 1
+
+    def show_cell(self, upper_i, lower_i):
+        """
+        The show_cell function takes two integers as arguments, an upper_i and a lower_i.
+        It then updates the sprite of the cell at that location on the board.
+
+        :param self: Access the attributes and methods of the class in python
+        :param upper_i: Select the row of the cell that is to be updated
+        :param lower_i: Determine which cell is being updated
+        :return: The cell object of the upper_i and lower_i index
+        :doc-author: Trelent
+        """
+
+        self.board[upper_i][lower_i].update_sprite()
 
     def check_adjacent_cells_for_mines(self, matrix, lower_i, upper_i):
         """
