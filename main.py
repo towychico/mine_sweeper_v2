@@ -72,11 +72,14 @@ def update_game_ui():
 
     window.blit(title_img, (185*game_session.sprites_scale, 25*game_session.sprites_scale))
     window.blit(clock_img, (185*game_session.sprites_scale, 135*game_session.sprites_scale))
-    window.blit(flag_img, (550*game_session.sprites_scale, 135*game_session.sprites_scale))
+    #I ran out of time for implementing this :(
+    #window.blit(flag_img, (550*game_session.sprites_scale, 135*game_session.sprites_scale))
     game_map.update_cells()
 
 
+
 def check_for_game_inputs():
+    global start_ticks2
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -89,22 +92,67 @@ def check_for_game_inputs():
                 upper_i, lower_i = game_map.get_cell_position((mouse_x, mouse_y))
                 if game_session.number_of_clicks == 0:
                     fix_map(upper_i, lower_i)
-
-                    game_map.flood_fill(game_map.board,upper_i,lower_i)
+                    game_map.flood_fill_BFS(game_map.board, upper_i, lower_i)
+                    game_map.check_for_sourrondedd_mines()
                 else:
                     game_map.show_cell(upper_i,lower_i)
+                    game_map.check_for_sourrondedd_mines()
                 print('\n')
                 print(game_map.matrix)
-            except :
-                print("crash")
+            except:
                 pass
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_p:
+                game_session.game_is_paused = not game_session.game_is_paused
+                start_ticks2 = pygame.time.get_ticks()
+                print("paused")
+
+
+def check_for_app_inputs():
+    global start_ticks2
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            game_session.game_is_running = False
+            pygame.quit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_p:
+                game_session.game_is_paused = not game_session.game_is_paused
+                start_ticks2 = pygame.time.get_ticks()
+                print("paused")
 
 game_map = map_handler.Map(12, 12,game_session)
+start_ticks = pygame.time.get_ticks()
+
+seconds_after_pause = 0
+
+temp = 0
 while game_session.game_is_running:
+
+
+
+
     pygame.display.flip()
     window.fill((255, 255, 255))
+    seconds = math.floor((pygame.time.get_ticks() - start_ticks) / 1000)
     if not game_session.game_is_paused:
+        #- seconds_after_pause
+        print(seconds)
 
+        format_time = str(datetime.timedelta(seconds=math.floor(seconds - game_session.time)))
+
+        timer_text = font.render(format_time, True, (0, 0, 0))
+        window.blit(timer_text, (285*game_session.sprites_scale, 150*game_session.sprites_scale))
         update_game_ui()
+
         check_for_game_inputs()
+    else:
+
+        seconds_after_pause = math.floor((pygame.time.get_ticks()-start_ticks) / 1000)
+        game_session.time =  seconds_after_pause
+        print(seconds_after_pause)
+        paused_label = font.render("Paused ", True, (0, 0, 0))
+        window.blit(paused_label, (285 * game_session.sprites_scale, 150 * game_session.sprites_scale))
+        check_for_app_inputs()
+        update_game_ui()
+
 

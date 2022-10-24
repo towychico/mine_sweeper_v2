@@ -37,6 +37,8 @@ class Cell(pygame.sprite.Sprite):
         """
         self.is_flagged = True
         self.game_session.number_of_flagged_mines += 1
+        self.number = -2
+        self.update_sprite()
 
     def exposed(self):
         """

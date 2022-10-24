@@ -13,8 +13,16 @@ class Map:
         self.matrix = self.build_matrix(width, height)
         self.board = self.build_board(self.matrix.tolist())
 
-
     def update_cells(self):
+        """
+        The update_cells function iterates through the board and blits each cell's image to the screen.
+        It does this by first setting upper_i equal to 0, which will be used as an index for row in self.board.
+        Then it sets lower_i equal to 0, which will be used as an index for _ in row.
+
+        :param self: Access the class attributes
+        :return: The board object
+        :doc-author: Trelent
+        """
         upper_i = 0
         for row in self.board:
             lower_i = 0
@@ -23,7 +31,6 @@ class Map:
                 self.game_session.window.blit(cell.image, (cell.x_pos, cell.y_pos))
                 lower_i += 1
             upper_i += 1
-
 
     def build_board(self, nested_list):
         """
@@ -44,7 +51,6 @@ class Map:
         for row in nested_list:
             lower_i = 0
             for _ in row:
-
                 x_pos = (upper_i * 70 + 8)
                 y_pos = (lower_i * 70 + 250)
                 temp_cell = Cell(upper_i, lower_i, nested_list[lower_i][upper_i], x_pos, y_pos, self.game_session)
@@ -119,11 +125,8 @@ class Map:
                     return upper_i, lower_i
                 lower_i += 1
             upper_i += 1
-    def get_adjacent_empty_cells_cords(self):
-        pass
 
-    def flood_fill(self,array, y, x):
-        print('waaaa')
+    def flood_fill_BFS(self, array, y, x):
         """
         The flood_fill function takes a 2D array and two integers, y and x. It then
         checks if the value at that point is equal to the current_value. If it is, it
@@ -142,61 +145,17 @@ class Map:
         width = len(array[0])
 
         queue = Queue()
-        queue.put((y, x))
+        queue.put((y, x))  # The next class period I'm gonna miss the pre-built data structures :(
         while not queue.empty():
             y, x = queue.get()
             if y < 0 or y >= height or x < 0 or x >= width or array[y][x].number != 0 or array[y][x].is_expose == True:
                 continue
             else:
-                print(y,x)
                 array[y][x].update_sprite()
                 queue.put((y + 1, x))
                 queue.put((y - 1, x))
                 queue.put((y, x + 1))
                 queue.put((y, x - 1))
-        self.game_session.number_of_clicks +=1
-
-
-    def show_adjacent_empty_cells(self,nested_list_raw, upper_i,lower_i,):
-        """
-        The show_adjacent_empty_cells function takes a nested list of integers and two integers as input.
-        It then iterates through the list, checking if each element is equal to zero. If it is, it adds that index to a queue.
-        The function then uses the queue to access adjacent cells in order to reveal them on screen.
-
-        :param self: Access the class attributes and methods
-        :param nested_list_raw: Get the raw data from the file
-        :param upper_i: Keep track of the row that is currently being checked
-        :param lower_i: Represent the column index of the cell
-        :param : Determine the upper and lower limits of the board
-        :return: The indexes of the cells that are adjacent to the empty cell
-        :doc-author: Trelent
-        """
-        print(upper_i,lower_i)
-        nested_list = []
-        for i in nested_list_raw:
-            row = []
-            for j in i:
-                temp = int(j)
-                row.append(temp)
-            nested_list.append(row)
-        print(type(upper_i))
-
-        height = len(nested_list)-1
-        width = len(nested_list[0])-1
-        queue = Queue()  # The next class period I'm gonna miss the pre-built data structures :(
-        queue.put((upper_i, lower_i))
-        indexes = []
-        while not queue.empty():
-            upper_i, lower_i = queue.get()
-            if not(upper_i < 0 or upper_i >=  height or lower_i < 0 or lower_i >= width or nested_list[upper_i][lower_i] != 0 ):
-
-                self.board[upper_i][lower_i].update_sprite()
-                indexes.append([upper_i,lower_i])
-                queue.put(upper_i+1, lower_i)
-                queue.put(upper_i-1, lower_i)
-                queue.put(upper_i, lower_i+1)
-                queue.put(upper_i, lower_i-1)
-        print(indexes)
         self.game_session.number_of_clicks += 1
 
     def show_cell(self, upper_i, lower_i):
@@ -210,12 +169,38 @@ class Map:
         :return: The cell object of the upper_i and lower_i index
         :doc-author: Trelent
         """
-        print(upper_i,lower_i)
+        print(upper_i, lower_i)
         self.game_session.number_of_clicks += 1
         self.board[upper_i][lower_i].update_sprite()
-    def handle_click(self,upper_i,lower_i):
+
+    def handle_click(self, upper_i, lower_i):
         if self.game_session.number_of_clicks != 0:
             self.show_cell(upper_i, lower_i)
+
+    def check_for_sourrondedd_mines(self):
+
+        upper_i = 0
+        for row in self.matrix:
+            lower_i = 0
+            for _ in row:
+
+                if self.matrix[upper_i][lower_i] == -1:
+                    adjacent_cell_index_list = self.get_adjacent_cords(self.matrix, [upper_i, lower_i])
+                    required_number_of_exposed_cells = len(adjacent_cell_index_list)
+                    temp = []
+                    upper_i_inside = 0
+                    for i in adjacent_cell_index_list:
+                        lower_i_inside = 0
+                        for j in i:
+                            if self.board[upper_i_inside][lower_i_inside].is_expose or self.board[upper_i_inside][lower_i_inside].number == -1:
+                                temp.append(1)
+                            lower_i_inside += 1
+                        upper_i_inside += 1
+                    if sum(temp) == required_number_of_exposed_cells:
+                        self.board[upper_i][lower_i].flag()
+                lower_i += 1
+            upper_i += 1
+
     def check_adjacent_cells_for_mines(self, matrix, lower_i, upper_i):
         """
         The check_adjacent_cells function takes a matrix and two indices as input.
@@ -282,7 +267,6 @@ class Map:
                         self.game_session.number_of_mines -= 1
                     matrix[upper_i][lower_i] = 0
 
-
                 lower_i += 1
             upper_i += 1
 
@@ -303,4 +287,3 @@ class Map:
         self.fill_map_with_mines(matrix_array)
         self.add_numbers(matrix_array)
         return matrix_array
-
