@@ -8,6 +8,22 @@ pygame.init()
 import datetime
 
 
+def fix_map(upper_i,lower_i):
+    global game_map
+    if game_session.number_of_clicks == 0 and game_map.board[upper_i][lower_i].number !=0:
+
+        valid_map = False
+        while not valid_map:
+            del game_map
+
+            game_map = map_handler.Map(12, 12, game_session)
+
+            if game_map.board[upper_i][lower_i].number == 0:
+                valid_map = True
+
+
+
+
 def adjust_dimensions():
     screen = pygame.display.set_mode()
     screen_width, screen_height = screen.get_size()
@@ -68,10 +84,19 @@ def check_for_game_inputs():
             pygame.quit()
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             (mouse_x, mouse_y) = pygame.mouse.get_pos()
+
             try:
                 upper_i, lower_i = game_map.get_cell_position((mouse_x, mouse_y))
-                game_map.show_cell(upper_i, lower_i)
+                if game_session.number_of_clicks == 0:
+                    fix_map(upper_i, lower_i)
+
+                    game_map.flood_fill(game_map.board,upper_i,lower_i)
+                else:
+                    game_map.show_cell(upper_i,lower_i)
+                print('\n')
+                print(game_map.matrix)
             except :
+                print("crash")
                 pass
 
 game_map = map_handler.Map(12, 12,game_session)
@@ -79,6 +104,7 @@ while game_session.game_is_running:
     pygame.display.flip()
     window.fill((255, 255, 255))
     if not game_session.game_is_paused:
+
         update_game_ui()
         check_for_game_inputs()
 

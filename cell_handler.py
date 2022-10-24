@@ -60,8 +60,10 @@ class Cell(pygame.sprite.Sprite):
         :doc-author: Trelent
         """
         self.exposed()
-        self.game_session.number_of_clicks += 1
+
         self.image = pygame.image.load(CELL_SPRITE_LIST[self.number])
+        if self.is_mine:
+            print("game Over")
 
 
 
